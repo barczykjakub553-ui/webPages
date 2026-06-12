@@ -689,6 +689,58 @@ code {
 .review-item.wrong .review-a.your strong { color: var(--wrong); }
 .review-a.correct strong { color: var(--correct); }
 
+/* Subject picker */
+.subject-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.subject-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 2px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.subject-card:hover {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.08);
+    transform: translateX(4px);
+}
+
+.subject-card .subject-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.subject-card .subject-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.subject-card .subject-count {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    background: rgba(148, 163, 184, 0.12);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .app { padding: 1rem; }

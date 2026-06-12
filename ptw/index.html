@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PTW Quiz — HTML, CSS i preprocesory</title>
+    <title>Quiz — Wybierz przedmiot</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app">
-        <!-- Ekran startowy -->
-        <section id="start-screen" class="screen active">
+        <!-- Ekran wyboru przedmiotu -->
+        <section id="subject-screen" class="screen active">
             <div class="card">
-                <div class="badge">Programowanie Tworzenia Witryn</div>
-                <h1>Quiz: HTML, CSS i preprocesory</h1>
-                <p class="subtitle">Część 1: Struktura, treść i semantyka</p>
+                <h1>Wybierz przedmiot</h1>
+                <p class="subtitle">Wybierz quiz, który chcesz rozwiązać</p>
+                <div id="subject-list" class="subject-list"></div>
+            </div>
+        </section>
+
+        <!-- Ekran startowy -->
+        <section id="start-screen" class="screen">
+            <div class="card">
+                <div class="badge" id="subject-badge">Programowanie Tworzenia Witryn</div>
+                <h1 id="subject-title">Quiz: HTML, CSS i preprocesory</h1>
+                <p class="subtitle" id="subject-subtitle">Część 1: Struktura, treść i semantyka</p>
 
                 <div class="info-grid">
                     <div class="info-box">
@@ -108,7 +117,8 @@
                     <button id="review-btn" class="btn-secondary">Zobacz odpowiedzi</button>
                     <button id="retry-btn" class="btn-primary">Spróbuj jeszcze raz</button>
                 </div>
-                <button id="menu-btn" class="btn-ghost" style="width:100%;margin-top:0.5rem">← Menu główne</button>
+                <button id="menu-btn" class="btn-ghost" style="width:100%;margin-top:0.5rem">← Menu przedmiotu</button>
+                <button id="subject-btn" class="btn-ghost" style="width:100%;margin-top:0.25rem">← Wybór przedmiotu</button>
             </div>
         </section>
 
@@ -126,6 +136,7 @@
     </div>
 
     <script src="questions.js"></script>
+    <script src="questions_IO.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

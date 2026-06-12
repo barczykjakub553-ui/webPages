@@ -1,6 +1,26 @@
 const QUIZ_SIZE = 30;
 
+const SUBJECTS = [
+    {
+        id: 'ptw',
+        name: 'Programowanie Tworzenia Witryn',
+        title: 'Quiz: HTML, CSS i preprocesory',
+        subtitle: 'Część 1: Struktura, treść i semantyka',
+        questions: () => QUESTIONS,
+        categories: () => CATEGORY_RANGES
+    },
+    {
+        id: 'io',
+        name: 'Inżynieria Oprogramowania',
+        title: 'Quiz: Inżynieria Oprogramowania',
+        subtitle: 'Metodyki, UML, testowanie, architektura',
+        questions: () => QUESTIONS_IO,
+        categories: () => CATEGORY_RANGES_IO
+    }
+];
+
 const state = {
+    subject: null,
     quiz: [],
     current: 0,
     answers: [],
@@ -12,6 +32,7 @@ const state = {
 const $ = (id) => document.getElementById(id);
 
 const screens = {
+    subject: $('subject-screen'),
     start: $('start-screen'),
     quiz: $('quiz-screen'),
     result: $('result-screen'),
@@ -33,11 +54,21 @@ function shuffle(arr) {
     return a;
 }
 
+function getQuestions() {
+    return state.subject.questions();
+}
+
+function getCategoryRanges() {
+    return state.subject.categories();
+}
+
 function initCategories() {
+    const questions = getQuestions();
+    const ranges = getCategoryRanges();
     let idx = 0;
-    for (const range of CATEGORY_RANGES) {
+    for (const range of ranges) {
         for (let i = 0; i < range.count; i++) {
-            if (QUESTIONS[idx]) QUESTIONS[idx].cat = range.name;
+            if (questions[idx]) questions[idx].cat = range.name;
             idx++;
         }
     }
@@ -58,14 +89,15 @@ function processPool(pool) {
 }
 
 function buildQuiz() {
+    const questions = getQuestions();
     if (state.mode === 'quiz30') {
-        return processPool(shuffle(QUESTIONS).slice(0, Math.min(QUIZ_SIZE, QUESTIONS.length)));
+        return processPool(shuffle(questions).slice(0, Math.min(QUIZ_SIZE, questions.length)));
     }
     if (state.mode === 'all') {
-        return processPool(shuffle(QUESTIONS));
+        return processPool(shuffle(questions));
     }
     if (state.mode === 'category') {
-        const pool = QUESTIONS.filter(q => q.cat === state.selectedCategory);
+        const pool = questions.filter(q => q.cat === state.selectedCategory);
         return processPool(shuffle(pool));
     }
     return [];
@@ -233,7 +265,43 @@ function showReview() {
     showScreen('review');
 }
 
-// ── Strona startowa ──────────────────────────────────────────────
+// ── Subject selection ───────────────────────────────────────────
+
+function renderSubjects() {
+    const list = $('subject-list');
+    list.innerHTML = '';
+    SUBJECTS.forEach(sub => {
+        const btn = document.createElement('button');
+        btn.className = 'subject-card';
+        btn.innerHTML = `
+            <div>
+                <div class="subject-name">${sub.name}</div>
+                <div class="subject-desc">${sub.subtitle}</div>
+            </div>
+            <span class="subject-count">${sub.questions().length} pytań</span>
+        `;
+        btn.addEventListener('click', () => selectSubject(sub));
+        list.appendChild(btn);
+    });
+}
+
+function selectSubject(sub) {
+    state.subject = sub;
+    initCategories();
+
+    $('subject-badge').textContent = sub.name;
+    $('subject-title').textContent = sub.title;
+    $('subject-subtitle').textContent = sub.subtitle;
+
+    const questions = getQuestions();
+    $('total-questions').textContent = questions.length;
+
+    setMode('quiz30');
+    renderCategoryPicker();
+    showScreen('start');
+}
+
+// ── Start screen ────────────────────────────────────────────────
 
 function setMode(mode) {
     state.mode = mode;
@@ -254,11 +322,12 @@ function setMode(mode) {
 
 function updateQuizSizeDisplay() {
     const el = $('quiz-size-display');
-    if (state.mode === 'quiz30') el.textContent = Math.min(QUIZ_SIZE, QUESTIONS.length);
-    else if (state.mode === 'all') el.textContent = QUESTIONS.length;
+    const questions = getQuestions();
+    if (state.mode === 'quiz30') el.textContent = Math.min(QUIZ_SIZE, questions.length);
+    else if (state.mode === 'all') el.textContent = questions.length;
     else {
         if (state.selectedCategory) {
-            el.textContent = QUESTIONS.filter(q => q.cat === state.selectedCategory).length;
+            el.textContent = questions.filter(q => q.cat === state.selectedCategory).length;
         } else {
             el.textContent = '?';
         }
@@ -272,13 +341,14 @@ function updateStartBtn() {
 
 function updateModeHint() {
     const hint = $('mode-hint');
+    const questions = getQuestions();
     if (state.mode === 'quiz30') {
         hint.textContent = 'Losowy zestaw 30 pytań. Każde pytanie ma jedną poprawną odpowiedź.';
     } else if (state.mode === 'all') {
-        hint.textContent = `Wszystkie ${QUESTIONS.length} pytań w losowej kolejności.`;
+        hint.textContent = `Wszystkie ${questions.length} pytań w losowej kolejności.`;
     } else {
         if (state.selectedCategory) {
-            const count = QUESTIONS.filter(q => q.cat === state.selectedCategory).length;
+            const count = questions.filter(q => q.cat === state.selectedCategory).length;
             hint.textContent = `Kategoria: ${state.selectedCategory} — ${count} pytań.`;
         } else {
             hint.textContent = 'Wybierz kategorię z listy powyżej, aby rozpocząć.';
@@ -289,7 +359,8 @@ function updateModeHint() {
 function renderCategoryPicker() {
     const list = $('category-list');
     list.innerHTML = '';
-    for (const range of CATEGORY_RANGES) {
+    const questions = getQuestions();
+    for (const range of getCategoryRanges()) {
         const btn = document.createElement('button');
         btn.className = 'category-item';
         btn.dataset.cat = range.name;
@@ -309,10 +380,7 @@ function renderCategoryPicker() {
 // ── Init ─────────────────────────────────────────────────────────
 
 function init() {
-    initCategories();
-
-    $('total-questions').textContent = QUESTIONS.length;
-    renderCategoryPicker();
+    renderSubjects();
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', () => setMode(btn.dataset.mode));
@@ -325,6 +393,7 @@ function init() {
     $('retry-btn').addEventListener('click', startQuiz);
     $('retry-from-review').addEventListener('click', startQuiz);
     $('menu-btn').addEventListener('click', () => showScreen('start'));
+    $('subject-btn').addEventListener('click', () => showScreen('subject'));
     $('review-btn').addEventListener('click', showReview);
     $('back-to-result').addEventListener('click', () => showScreen('result'));
 }
