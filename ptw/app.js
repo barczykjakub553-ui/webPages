@@ -398,4 +398,35 @@ function init() {
     $('back-to-result').addEventListener('click', () => showScreen('result'));
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// ── Theme toggle ────────────────────────────────────────────────
+
+function initTheme() {
+    const saved = localStorage.getItem('quiz-theme');
+    if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+    updateThemeButton();
+
+    $('theme-toggle').addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        if (next === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        localStorage.setItem('quiz-theme', next);
+        updateThemeButton();
+    });
+}
+
+function updateThemeButton() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    $('theme-icon').textContent = isLight ? '🌙' : '☀️';
+    $('theme-label').textContent = isLight ? 'Ciemny' : 'Jasny';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    init();
+});

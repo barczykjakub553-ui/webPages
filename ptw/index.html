@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz — Wybierz przedmiot</title>
     <link rel="stylesheet" href="styles.css">
+    <script>if(localStorage.getItem('quiz-theme')==='light')document.documentElement.setAttribute('data-theme','light');</script>
 </head>
 <body>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Przełącz motyw">
+        <span class="theme-icon" id="theme-icon">☀️</span>
+        <span id="theme-label">Jasny</span>
+    </button>
     <div class="app">
         <!-- Ekran wyboru przedmiotu -->
         <section id="subject-screen" class="screen active">
